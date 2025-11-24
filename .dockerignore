@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+susenv/
+
+# Django static/media/temp files
+media/
+*.sqlite3
+*.log
+*.bak
+*.swp
+output*
+*.mp4
+*.sql
+
+# Test folders
+test_videos/
+db.sqlite3
+
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docs/Dev
+Project Structure.txt

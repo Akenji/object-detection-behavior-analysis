@@ -1,0 +1,690 @@
+<!-- malpractice_logs.html -->
+{% include 'header.html' %}
+<style>
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Spacing after header */
+  .malpractice-section {
+    padding: 60px 0 40px;
+    /* Extra top padding so content isn't hidden behind nav */
+    min-height: 70vh;
+  }
+
+  /* Section Heading */
+  .malpractice-heading {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    color: #333;
+    position: relative;
+    text-align: center;
+  }
+
+  .malpractice-heading::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background-color: #007bff;
+    margin: 10px auto 0;
+  }
+
+  /* Table Container */
+  .table-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Table Styling */
+  table.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+
+  table.table th {
+    background-color: #f7f9fc;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  table.table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+    border-top: 1px solid #dee2e6;
+  }
+
+  /* Highlight rows for "reviewed" if you like */
+  .reviewed-row {
+    background-color: #f0f0f0 !important;
+    opacity: 0.6;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 5px;
+    margin: 0 2px;
+  }
+
+  .btn-download {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-download:hover {
+    background-color: #0056b3;
+    border-color: #004998;
+  }
+
+  .btn-review {
+    min-width: 120px;
+  }
+
+  .btn-reviewed-yes {
+    background-color: #28a745 !important;
+    color: #fff;
+  }
+
+  .btn-reviewed-no {
+    background-color: #dc3545 !important;
+    color: #fff;
+  }
+
+  .btn-review[disabled],
+  .btn-review[disabled]:hover {
+    cursor: not-allowed !important;
+    color: #ffffff !important;
+    /* Makes text red */
+  }
+
+  /* Modal Customization */
+  .modal-content {
+    border-radius: 8px;
+  }
+
+  .modal-header {
+    background: #007bff;
+    color: #fff;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .modal-header .modal-title {
+    font-weight: 600;
+  }
+
+  .close {
+    color: #fff;
+    opacity: 1;
+  }
+
+  .close:hover {
+    color: #ffc107;
+  }
+
+  .my-toggle-wrapper {
+    text-align: center; /* center horizontally */
+    margin-bottom: 20px;
+  }
+  /* Toggle container */
+  .my-toggle {
+    position: relative;
+    display: inline-block;
+    width: 250px;  /* adjusted for proper text fit */
+    height: 50px;
+    background-color: #f0f2f5;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  /* Label container for the two halves */
+  .my-toggle-labels {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #007bff;
+  }
+  .my-toggle-labels span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+  }
+  .my-toggle-labels span.active {
+    color: #fff;
+  }
+  /* The sliding indicator */
+  .my-toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%; /* exactly half the container */
+    height: 100%;
+    background-color: #007bff;
+    transition: transform 0.3s ease;
+    z-index: 1;
+  }
+
+  .reviewing-row {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+</style>
+
+<section class="malpractice-section">
+  <div class="container">
+    <h2 class="malpractice-heading">Malpractice Log</h2>
+
+    {% if not request.user.is_superuser %}
+      {% if request.user.lecturehall %}
+        <div class="alert alert-success text-center">
+          <strong>Assignment Status:</strong> You are currently assigned to 
+          {{ request.user.lecturehall.building }} - {{ request.user.lecturehall.hall_name }}.
+        </div>
+      {% else %}
+        <div class="alert alert-warning text-center">
+          <strong>Assignment Status:</strong> You haven't been assigned to any classrooms.
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar mb-4">
+      <form method="get">
+        <input type="hidden" name="review" value="{{ review_filter|default:'not_reviewed' }}">
+        {% if request.user.is_superuser %}
+          <!-- ADMIN FILTERS (2 Rows) -->
+          <div class="form-row">
+            <!-- Filter by Date -->
+            <div class="form-group col-md-3">
+              <label for="date">Filter by Date:</label>
+              <input type="date" name="date" id="date" class="form-control" value="{{ date_filter }}">
+            </div>
+            <!-- Filter by Time (FN & AN) -->
+            <div class="form-group col-md-2">
+              <label for="time">Filter by Time:</label>
+              <select name="time" id="time" class="form-control">
+                <option value="">All</option>
+                <option value="FN" {% if time_filter == 'FN' %}selected{% endif %}>FN (Before Noon)</option>
+                <option value="AN" {% if time_filter == 'AN' %}selected{% endif %}>AN (After Noon)</option>
+              </select>
+            </div>
+            <!-- Filter by Malpractice Type -->
+            <div class="form-group col-md-3">
+              <label for="malpractice_type">Malpractice Type:</label>
+              <select name="malpractice_type" id="malpractice_type" class="form-control">
+                <option value="">All Types</option>
+                <option value="Leaning" {% if malpractice_filter == 'Leaning' %}selected{% endif %}>Leaning</option>
+                <option value="Mobile Phone Detected" {% if malpractice_filter == 'Mobile Phone Detected' %}selected{% endif %}>Mobile Phone Detected</option>
+                <option value="Passing Paper" {% if malpractice_filter == 'Passing Paper' %}selected{% endif %}>Passing Paper</option>
+                <option value="Turning Back" {% if malpractice_filter == 'Turning Back' %}selected{% endif %}>Turning Back</option>
+              </select>
+            </div>
+            <!-- Assigned Faculty -->
+            <div class="form-group col-md-4">
+              <label for="faculty">Assigned Faculty:</label>
+              <select name="faculty" id="faculty" class="form-control">
+                <option value="">All Faculty</option>
+                {% for f in faculty_list %}
+                  <option value="{{ f.id }}" 
+                    {% if faculty_filter|stringformat:"s" == f.id|stringformat:"s" %}selected{% endif %}>
+                    {{ f.get_full_name|default:f.username }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <!-- Search Lecture Hall -->
+            <div class="form-group col-md-4">
+              <label for="q">Search Lecture Hall:</label>
+              <input type="text" name="q" id="q" class="form-control" 
+                    placeholder="Enter LH name (e.g., LH1)" value="{{ query }}">
+            </div>
+            <!-- Filter by Building -->
+            <div class="form-group col-md-4">
+              <label for="building">Filter by Building:</label>
+              <select name="building" class="form-control" id="building">
+                <option value="">All Buildings</option>
+                {% for b in buildings %}
+                  <option value="{{ b }}" {% if building_filter == b %}selected{% endif %}>{{ b }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!-- Filter by Assignment -->
+            <div class="form-group col-md-3">
+              <label for="assigned">Filter by Assignment:</label>
+              <select name="assigned" class="form-control" id="assigned">
+                <option value="">All</option>
+                <option value="assigned" {% if assignment_filter == 'assigned' %}selected{% endif %}>Assigned</option>
+                <option value="unassigned" {% if assignment_filter == 'unassigned' %}selected{% endif %}>Unassigned</option>
+              </select>
+            </div>
+            <!-- Apply Button -->
+            <div class="form-group col-md-1 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-filter"></i>
+              </button>
+            </div>
+          </div>
+        {% else %}
+          <!-- TEACHER FILTERS (Single Row) -->
+          <div class="form-row">
+            <!-- Filter by Date -->
+            <div class="form-group col-md-2">
+              <label for="date">Filter by Date:</label>
+              <input type="date" name="date" id="date" class="form-control" value="{{ date_filter }}">
+            </div>
+            <!-- Filter by Time -->
+            <div class="form-group col-md-2">
+              <label for="time">Filter by Time:</label>
+              <select name="time" id="time" class="form-control">
+                <option value="">All</option>
+                <option value="FN" {% if time_filter == 'FN' %}selected{% endif %}>FN</option>
+                <option value="AN" {% if time_filter == 'AN' %}selected{% endif %}>AN</option>
+              </select>
+            </div>
+            <!-- Malpractice Type -->
+            <div class="form-group col-md-2">
+              <label for="malpractice_type">Malpractice:</label>
+              <select name="malpractice_type" id="malpractice_type" class="form-control">
+                <option value="">All Types</option>
+                <option value="Leaning" {% if malpractice_filter == 'Leaning' %}selected{% endif %}>Leaning</option>
+                <option value="Mobile Phone Detected" {% if malpractice_filter == 'Mobile Phone Detected' %}selected{% endif %}>Mobile Phone Detected</option>
+                <option value="Passing Paper" {% if malpractice_filter == 'Passing Paper' %}selected{% endif %}>Passing Paper</option>
+                <option value="Turning Back" {% if malpractice_filter == 'Turning Back' %}selected{% endif %}>Turning Back</option>
+              </select>
+            </div>
+            <!-- Building -->
+            <div class="form-group col-md-2">
+              <label for="building">Building:</label>
+              <select name="building" class="form-control" id="building">
+                <option value="">All</option>
+                {% for b in buildings %}
+                  <option value="{{ b }}" {% if building_filter == b %}selected{% endif %}>{{ b }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!-- Lecture Hall Search -->
+            <div class="form-group col-md-3">
+              <label for="q">Lecture Hall:</label>
+              <input type="text" name="q" id="q" class="form-control" 
+                    placeholder="Enter LH name (e.g., LH1)" value="{{ query }}">
+            </div>
+            <!-- Apply Button -->
+            <div class="form-group col-md-1 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-filter"></i>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+    <!-- END OF FILTER BAR -->
+
+    <!-- Review Toggle Switch -->
+    <!-- Review Toggle Switch -->
+    {% if request.user.is_superuser %}
+      <div class="my-toggle-wrapper">
+        <div class="my-toggle" id="reviewToggle">
+          <div class="my-toggle-slider" id="reviewSlider"></div>
+          <div class="my-toggle-labels">
+            <span id="labelNotReviewed" class="{% if review_filter|default:'not_reviewed' == 'not_reviewed' %}active{% endif %}">
+              Not Reviewed
+            </span>
+            <span id="labelReviewed" class="{% if review_filter == 'reviewed' %}active{% endif %}">
+              Reviewed
+            </span>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Malpractice Log Table -->
+    <div class="table-container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Sl. No</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Malpractice</th>
+            <th scope="col">Lecture Hall</th>
+            <th scope="col">Assigned Faculty</th>
+            <th scope="col">View</th>
+            <th scope="col">Download</th>
+            {% if is_admin %}
+            <th scope="col">Review Malpractice</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if result %}
+            {% for i in result %}
+            <tr class="{% if is_admin and i.verified %}reviewed-row{% endif %}">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ i.date }}</td>
+              <td>{{ i.time }}</td>
+              <td>{{ i.malpractice }}</td>
+              <td>
+                {% if i.lecture_hall %}
+                {{ i.lecture_hall.building }} - {{ i.lecture_hall.hall_name }}
+                {% else %}
+                <span class="text-muted">N/A</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if i.lecture_hall and i.lecture_hall.assigned_teacher %}
+                {{ i.lecture_hall.assigned_teacher.get_full_name|default:i.lecture_hall.assigned_teacher.username }}
+                {% else %}
+                <span class="text-muted">Unassigned</span>
+                {% endif %}
+              </td>
+              <td>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#videoModal"
+                  onclick="playVideo('{{ i.proof }}')">
+                  View
+                </button>
+              </td>
+              <td>
+                <a href="/media/{{ i.proof }}" download class="btn btn-primary btn-download">
+                  Download
+                </a>
+              </td>
+              {% if is_admin %}
+              <td>
+                <div class="btn-group" role="group">
+                  <button
+                    class="btn btn-success btn-review {% if i.verified and i.is_malpractice %}btn-reviewed-yes{% endif %}"
+                    onclick="reviewMalpractice(this, 'yes')" {% if i.verified %}disabled{% endif %}>
+                    Malpractice
+                  </button>
+                  <button
+                    class="btn btn-danger btn-review {% if i.verified and not i.is_malpractice %}btn-reviewed-no{% endif %}"
+                    onclick="reviewMalpractice(this, 'no')" {% if i.verified %}disabled{% endif %}>
+                    Not Malpractice
+                  </button>
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="{% if is_admin %}9{% else %}8{% endif %}" class="text-center text-muted">
+                No malpractice logs found.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Malpractice Log Table -->
+    
+  </div>
+</section>
+
+<!-- Modal for Video -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel">Video Analysis</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <video id="videoPlayer" width="100%" controls autoplay muted playsinline>
+          Your browser does not support the video tag.
+        </video>
+        <div id="videoError" class="text-danger mt-2" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleEl = document.getElementById("reviewToggle");
+    const sliderEl = document.getElementById("reviewSlider");
+    const labelNotReviewed = document.getElementById("labelNotReviewed");
+    const labelReviewed = document.getElementById("labelReviewed");
+
+    // Determine initial state based on which label has the 'active' class.
+    let currentState = labelReviewed.classList.contains("active")
+                      ? "reviewed"
+                      : "not_reviewed";
+
+    // Set the slider's initial position.
+    sliderEl.style.transform =
+      currentState === "reviewed" ? "translateX(100%)" : "translateX(0)";
+
+    // Toggle without reloading the page:
+    toggleEl.addEventListener("click", function () {
+      // Toggle state and update slider and labels.
+      if (currentState === "not_reviewed") {
+        currentState = "reviewed";
+        sliderEl.style.transform = "translateX(100%)";
+        labelNotReviewed.classList.remove("active");
+        labelReviewed.classList.add("active");
+      } else {
+        currentState = "not_reviewed";
+        sliderEl.style.transform = "translateX(0)";
+        labelReviewed.classList.remove("active");
+        labelNotReviewed.classList.add("active");
+      }
+
+      // Update the URL parameter without reloading.
+      const url = new URL(window.location.href);
+      url.searchParams.set("review", currentState);
+      history.pushState({}, "", url.href);
+
+      // Fetch the updated logs HTML and update the table container.
+      updateLogs(url.href);
+    });
+
+    function updateLogs(urlWithFilter) {
+      // Add an X-Requested-With header to signal an AJAX request if needed by your view.
+      fetch(urlWithFilter, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then((response) => response.text())
+        .then((htmlText) => {
+          // Parse the fetched HTML.
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, "text/html");
+          // Assume the logs table is contained within the element with the class '.table-container'
+          const newTableContainer = doc.querySelector(".table-container");
+          if (newTableContainer) {
+            const currentContainer = document.querySelector(".table-container");
+            if (currentContainer) {
+              currentContainer.innerHTML = newTableContainer.innerHTML;
+            }
+          }
+        })
+        .catch((err) => console.error("Error updating logs:", err));
+    }
+  });
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const filterForm = document.querySelector(".filter-bar form");
+    if (!filterForm) return;
+
+    filterForm.addEventListener("submit", function(e) {
+      // Prevent the default full-page reload.
+      e.preventDefault();
+      sessionStorage.setItem("retainFilters", "true");
+      
+      // Serialize form data into query string.
+      const formData = new FormData(filterForm);
+      const params = new URLSearchParams(formData);
+      const fetchUrl = window.location.pathname + "?" + params.toString();
+
+      // Optionally update the URL (if you wish to reflect the current state in the address bar)
+      history.pushState({}, "", fetchUrl);
+
+      // Fetch the updated logs (assuming your view returns a complete HTML page)
+      fetch(fetchUrl, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(response => response.text())
+        .then(htmlText => {
+          // Create a temporary DOM container.
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, "text/html");
+
+          // Locate the new table container in the fetched HTML.
+          const newTableContainer = doc.querySelector(".table-container");
+          if (newTableContainer) {
+            // Replace the current table container's content with the new HTML.
+            const currentTableContainer = document.querySelector(".table-container");
+            if (currentTableContainer) {
+              currentTableContainer.innerHTML = newTableContainer.innerHTML;
+            }
+          }
+        })
+        .catch(error => {
+          console.error("Error during filtering:", error);
+        });
+    });
+  });
+
+
+  // Filtering data made to default when page is refreshed
+  window.addEventListener("load", function() {
+    const navEntries = performance.getEntriesByType("navigation");
+    if (navEntries.length > 0 && navEntries[0].type === "reload") {
+      // When the page was manually refreshed, clear the query parameters.
+      history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
+
+
+  // VIEW VIDEO
+  function playVideo(videoUrl) {
+    const videoPlayer = document.getElementById('videoPlayer');
+    const errorDisplay = document.getElementById('videoError');
+    errorDisplay.style.display = 'none';
+
+    // Correctly construct the mediaPath
+    const mediaPath = `media/${videoUrl}`; // Removed semicolon and corrected template literal
+
+    // Clear any previous <source> elements
+    videoPlayer.pause();
+    while (videoPlayer.firstChild) {
+      videoPlayer.removeChild(videoPlayer.firstChild);
+    }
+
+    // Create new source
+    const source = document.createElement('source');
+    source.src = mediaPath;
+    source.type = 'video/mp4';
+
+    // Handle loading error
+    source.onerror = () => {
+      errorDisplay.textContent = 'Error: Video file not found or invalid format';
+      errorDisplay.style.display = 'block';
+    };
+
+    videoPlayer.appendChild(source);
+
+    // Attempt to play
+    const playPromise = videoPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        errorDisplay.textContent = `Playback failed: ${error.message}`; // Corrected template literal
+        errorDisplay.style.display = 'block';
+      });
+    }
+  }
+
+
+
+
+
+  // Get current review filter from template (defaults to 'not_reviewed')
+  const currentReviewFilter = "{{ review_filter|default:'not_reviewed' }}".toLowerCase();
+  function reviewMalpractice(button, decision) {
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+
+    // Get the table row containing the clicked button
+    const row = button.closest('tr');
+    // Add a class to ensure transitions are applied
+    row.classList.add('reviewing-row');
+    
+    const proof = row.querySelector('a[download]').getAttribute('href').split('/').pop();
+
+    fetch(`/review_malpractice/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ proof: proof, decision: decision })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Mark row as reviewed and disable buttons in this row
+        row.classList.add('reviewed-row');
+        const buttons = row.querySelectorAll('.btn-review');
+        buttons.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.remove('btn-reviewed-yes', 'btn-reviewed-no');
+        });
+        if (decision === 'yes') {
+          button.classList.add('btn-reviewed-yes');
+        } else {
+          button.classList.add('btn-reviewed-no');
+        }
+
+        // If the log now doesn’t belong to the current filter, animate it out.
+        if ((currentReviewFilter === "not_reviewed" && decision === "yes") ||
+            (currentReviewFilter === "not_reviewed" && decision === "no")) {
+          // Force reflow for consistent animation
+          void row.offsetWidth;
+          row.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+          row.style.opacity = "0";
+          row.style.transform = "translateX(50px)";
+          setTimeout(() => {
+            row.remove();
+          }, 400);
+        }
+      }
+    })
+    .catch(error => {
+      console.error("Review update failed:", error);
+      // Optionally, you can display an error notification here.
+    })
+    .finally(() => {
+      // Optionally restore original button content if needed (or leave it as is)
+      button.innerHTML = originalContent;
+    });
+  }
+
+
+
+</script>
