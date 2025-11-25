@@ -1,22 +1,27 @@
-# 🎓 DetectSus: Real-Time Malpractice Detection in Classrooms Using Computer Vision
+## Inspired By and Adapted From
 
-> A comprehensive AI-driven system that detects and flags suspicious activities during classroom examinations, leveraging cutting-edge computer vision and deep learning models for enhanced academic integrity.
+This work is heavily inspired by and uses foundational concepts from the following project:
+Link:[DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision](https://github.com/noelmathen/DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision)
+
+
+# 🎓 CatchThem: Real-Time Malpractice Detection in Classrooms Using Computer Vision and behaviour analysis
 
 CatchThem is a real-time exam malpractice analysis tool, detecting prohibited items like mobile phones and pose estimation (e.g., identifying suspicious behaviors like turning around or passing notes) and behavior analysis (like, Loitering detection, Crowd counting , object detection, Zone intrusion alerts )
 
 ---
 
 # Live Demonstration
-> Click the thumbnail to watch the youtube video
+> Click the thumbnail to watch the youtube video (Coming Soon)
 
-[![DetectSus Demo](https://img.youtube.com/vi/wUmAu1ub52Y/0.jpg)](https://youtu.be/wUmAu1ub52Y)
+[CatchThem Demo]()()
 
 ---
 
 ## 🧠 Overview
-DetectSus is a real-time surveillance system designed to detect and report instances of malpractice during offline classroom examinations. By combining **object detection** (e.g., detecting prohibited items like mobile phones) and **pose estimation** (e.g., identifying suspicious behaviors like turning around or passing notes), this project aims to provide educational institutions with an **automated, scalable, and privacy-focused** exam monitoring solution.
+CatchThem is a real-time surveillance system designed to detect and report instances of malpractice during offline classroom examinations. By combining **object detection** (e.g., detecting prohibited items like mobile phones) and **pose estimation** (e.g., identifying suspicious behaviors like turning around or passing notes), this project aims to provide educational Intergrity.
+This project has also beeen extended to capture behavior analysis (like, Loitering detection, Crowd counting , object detection, Zone intrusion alerts )
 
-❓**Why DetectSus?**
+❓**Why This?**
 - Traditional invigilation struggles to catch subtle, tech-enabled cheating in large classrooms.
 - Modern **deep learning** techniques offer faster, more reliable detection.
 - **Offline-first design** ensures local data processing and privacy, avoiding cloud dependencies.
@@ -35,7 +40,7 @@ DetectSus is a real-time surveillance system designed to detect and report insta
 ---
 
 ## ⛏️ Project Architecture
-A high-level flow of how DetectSus operates in the classroom:
+A high-level flow of how CatchThem operates in the classroom:
 
 1. **Video Capture:**
    - One or more webcams capture live footage from strategic angles (front/top corner).
@@ -62,7 +67,7 @@ A high-level flow of how DetectSus operates in the classroom:
 ---
 
 ## ⚙️ Installation & Setup
-Follow these steps to get the DetectSus system up and running.
+Follow these steps to get the CatchThem system up and running.
 
 ### 1. Prerequisites
 - **Operating System:** Windows 10/11, or Ubuntu 20.04+ recommended.
@@ -78,8 +83,8 @@ Follow these steps to get the DetectSus system up and running.
 
 ### 2. Repository Cloning
 ```bash
-git clone https://github.com/noelmathen/DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision.git
-cd DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision
+git clone https://github.com/Akenji/object-detection-behavior-analysis.git
+cd object-detection-behavior-analysis.git
 ```
 
 ### 3. Python Environment
@@ -217,17 +222,6 @@ DetectSus/
 - Custom Python scripts for each type of malpractice behavior
 
 
----
-
-## 👨‍💻 Team Contributors
-
-- Allen Prince
-- Dea Elizabeth Varghese
-- Noel Mathen Eldho
-- Shruti Maria Shibu
-
----
-
 
 ## 📑 Research Papers & Reports
 1. **_[Object Detection for Real-Time Malpractice Detection in Classrooms Using Computer Vision](https://doi.org/10.52783/jisem.v10i33s.5464)_**  
@@ -254,9 +248,9 @@ We welcome contributions! Please:
 
 ---
 
-## 🖼️ Output Screenshots
+## 🖼️ Output Screenshots (Coming Soon)
 
-### 1_HomeScreen.png  
+<!-- ### 1_HomeScreen.png  
 ![1_HomeScreen](https://github.com/noelmathen/DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision/blob/main/static/Demo%20and%20Outputs/1_HomeScreen.png?raw=true)
 
 ### 2_MalpracticeLogsPage.png  
@@ -286,5 +280,6 @@ We welcome contributions! Please:
 ### 10_TurningBack.png  
 ![10_TurningBack](https://github.com/noelmathen/DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision/blob/main/static/Demo%20and%20Outputs/10_TurningBack.png?raw=true)
 
+-->
 
 
