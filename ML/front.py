@@ -17,7 +17,7 @@ if IS_CLIENT:
 # ========================
 # CONFIGURABLE VARIABLES
 # ========================
-USE_CAMERA = True
+USE_CAMERA = False
 CAMERA_INDEX = 0
 VIDEO_PATH = "test_videos/Leaning.mp4"
 # VIDEO_PATH = "test_videos/Passing_Paper.mp4"
@@ -64,23 +64,38 @@ if IS_CLIENT:
 
     scp = SCPClient(ssh.get_transport())
 
-    db = mysql.connector.connect(
-        host=hostname,
-        port=3306,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
+    try:
+        db = mysql.connector.connect(
+            host=hostname,
+            port=3306,
+            user=DB_USER,
+            password=DB_PASS,
+            database=DB_NAME
+        )
+    except Exception as e:
+        print("[DEBUG] SSH client DB connection failed:", e)
+        db = None
 else:
     # Local DB if host
-    db = mysql.connector.connect(
-        host="localhost",
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user=DB_USER,
+            password=DB_PASS,
+            database=DB_NAME
+        )
+    except Exception as e:
+        print("[DEBUG] Local DB connection failed:", e)
+        db = None
 
-cursor = db.cursor()
+if db is not None:
+    try:
+        cursor = db.cursor()
+    except Exception as e:
+        print("[DEBUG] Could not create DB cursor:", e)
+        cursor = None
+else:
+    cursor = None
 
 # ========================
 # HELPER FUNCTIONS
@@ -150,8 +165,21 @@ def detect_passing_paper(wrists):
 # ========================
 # LOAD MODELS
 # ========================
-pose_model = YOLO(POSE_MODEL_PATH)
-mobile_model = YOLO(MOBILE_MODEL_PATH)
+pose_model = None
+mobile_model = None
+try:
+    print(f"[DEBUG] Loading pose model from: {POSE_MODEL_PATH}")
+    pose_model = YOLO(POSE_MODEL_PATH)
+    print("[DEBUG] Pose model loaded")
+except Exception as e:
+    print("[DEBUG] Failed to load pose model:", e)
+
+try:
+    print(f"[DEBUG] Loading mobile model from: {MOBILE_MODEL_PATH}")
+    mobile_model = YOLO(MOBILE_MODEL_PATH)
+    print("[DEBUG] Mobile model loaded")
+except Exception as e:
+    print("[DEBUG] Failed to load mobile model:", e)
 
 # ========================
 # VIDEO SOURCE
@@ -159,6 +187,12 @@ mobile_model = YOLO(MOBILE_MODEL_PATH)
 cap = cv2.VideoCapture(CAMERA_INDEX if USE_CAMERA else VIDEO_PATH)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+print(f"[DEBUG] VideoCapture created. USE_CAMERA={USE_CAMERA}, CAMERA_INDEX={CAMERA_INDEX}, VIDEO_PATH={VIDEO_PATH}")
+print("[DEBUG] cap.isOpened():", cap.isOpened())
+if not cap.isOpened():
+    print("[DEBUG] Video source not opened. If using a camera, check camera index and that no other app is using it. Exiting.")
+    # allow the script to exit gracefully
+    raise SystemExit(1)
 
 # ========================
 # PER-EVENT STATE VARIABLES
