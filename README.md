@@ -8,6 +8,7 @@ Link:[DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Com
 
 CatchThem is a real-time exam malpractice analysis tool, detecting prohibited items like mobile phones and pose estimation (e.g., identifying suspicious behaviors like turning around or passing notes) and behavior analysis (like, Loitering detection, Crowd counting , object detection, Zone intrusion alerts )
 
+<!--
 ---
 
 # Live Demonstration
@@ -16,6 +17,7 @@ CatchThem is a real-time exam malpractice analysis tool, detecting prohibited it
 [CatchThem Demo]()()
 
 ---
+-->
 
 ## 🧠 Overview
 CatchThem is a real-time surveillance system designed to detect and report instances of malpractice during offline classroom examinations. By combining **object detection** (e.g., detecting prohibited items like mobile phones) and **pose estimation** (e.g., identifying suspicious behaviors like turning around or passing notes), this project aims to provide educational Intergrity.
@@ -97,7 +99,7 @@ source venv/bin/activate      # Linux or Mac
 
 ### 4. Install Requirements
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt 
 ```
 (This installs **Django**, **OpenCV**, **Ultralytics YOLOv8**, **paramiko**, **scp**, and other dependencies.)
 

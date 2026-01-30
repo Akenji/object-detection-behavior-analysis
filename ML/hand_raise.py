@@ -199,10 +199,10 @@ while cap.isOpened():
             hall_id = hall_result[0] if hall_result else None
 
             sql = """
-                INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id, verified)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """
-            values = (date_db, time_db, ACTION_NAME, proof_filename, hall_id)
+            values = (date_db, time_db, ACTION_NAME, proof_filename, hall_id, False)
             cursor.execute(sql, values)
             db.commit()
 

@@ -17,13 +17,13 @@ if IS_CLIENT:
 # ========================
 # CONFIGURABLE VARIABLES
 # ========================
-USE_CAMERA = False
+USE_CAMERA = True
 CAMERA_INDEX = 0
 VIDEO_PATH = "test_videos/Leaning.mp4"
 # VIDEO_PATH = "test_videos/Passing_Paper.mp4"
 # VIDEO_PATH = "test_videos/Phone.mp4"
 
-LECTURE_HALL_NAME = "Hall-1, Floor 1"
+LECTURE_HALL_NAME = "Hall1, Floor 1"
 BUILDING = "FET Building"
 
 DB_USER = "catchthem"
@@ -38,7 +38,11 @@ POSE_MODEL_PATH = "ML/yolov8n-pose.pt"
 # Mobile model (for mobile phone detection)
 MOBILE_MODEL_PATH = "ML/yolo11n.pt"
 
-MEDIA_DIR = "../media/"
+# Determine the absolute path to the media directory
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+MEDIA_DIR = os.path.join(PROJECT_ROOT, "media")
 
 # Thresholds for events
 LEANING_THRESHOLD = 3      # consecutive frames needed for leaning
@@ -351,10 +355,10 @@ try:
                         remote_dest = f"./DetectSus/media/{proof_filename}"
                         scp.put(local_temp, remote_dest)
                     sql = """
-                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id)
-                        VALUES (%s, %s, %s, %s, %s)
+                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id, verified)
+                        VALUES (%s, %s, %s, %s, %s, %s)
                     """
-                    val = (date_db, time_db, LEANING_ACTION, proof_filename, hall_id)
+                    val = (date_db, time_db, LEANING_ACTION, proof_filename, hall_id, False)
                     cursor.execute(sql, val)
                     db.commit()
                 else:
@@ -404,10 +408,10 @@ try:
                         remote_dest = f"./DetectSus/media/{proof_filename}"
                         scp.put(local_temp, remote_dest)
                     sql = """
-                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id)
-                        VALUES (%s, %s, %s, %s, %s)
+                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id, verified)
+                        VALUES (%s, %s, %s, %s, %s, %s)
                     """
-                    val = (date_db, time_db, PASSING_ACTION, proof_filename, hall_id)
+                    val = (date_db, time_db, PASSING_ACTION, proof_filename, hall_id, False)
                     cursor.execute(sql, val)
                     db.commit()
                 else:
@@ -477,10 +481,10 @@ try:
                         remote_dest = f"./DetectSus/media/{proof_filename}"
                         scp.put(local_temp, remote_dest)
                     sql = """
-                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id)
-                        VALUES (%s, %s, %s, %s, %s)
+                        INSERT INTO app_malpraticedetection (date, time, malpractice, proof, lecture_hall_id, verified)
+                        VALUES (%s, %s, %s, %s, %s, %s)
                     """
-                    val = (date_db, time_db, ACTION_MOBILE, proof_filename, hall_id)
+                    val = (date_db, time_db, ACTION_MOBILE, proof_filename, hall_id, False)
                     cursor.execute(sql, val)
                     db.commit()
                 else:
