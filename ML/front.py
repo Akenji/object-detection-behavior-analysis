@@ -17,14 +17,14 @@ if IS_CLIENT:
 # ========================
 # CONFIGURABLE VARIABLES
 # ========================
-USE_CAMERA = True
+USE_CAMERA = False
 CAMERA_INDEX = 0
-VIDEO_PATH = "test_videos/Leaning.mp4"
+VIDEO_PATH = "../media/trainingVid.mp4"
 # VIDEO_PATH = "test_videos/Passing_Paper.mp4"
 # VIDEO_PATH = "test_videos/Phone.mp4"
 
-LECTURE_HALL_NAME = "Hall1, Floor 1"
-BUILDING = "FET Building"
+LECTURE_HALL_NAME = "Hall-1, Floor 1"
+BUILDING = "FET BUILDING"
 
 DB_USER = "catchthem"
 DB_PASS = "catchthem@321"
@@ -327,7 +327,7 @@ try:
                 lean_frames = 1
                 if not lean_recording:
                     lean_recording = True
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    fourcc = cv2.VideoWriter_fourcc(*"avc1")
                     lean_video = cv2.VideoWriter("output_leaning.mp4", fourcc, 30, (FRAME_WIDTH, FRAME_HEIGHT))
             else:
                 lean_frames += 1
@@ -380,7 +380,7 @@ try:
                 passing_frames = 1
                 if not passing_recording:
                     passing_recording = True
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    fourcc = cv2.VideoWriter_fourcc(*"avc1")
                     passing_video = cv2.VideoWriter("output_passingpaper.mp4", fourcc, 30, (FRAME_WIDTH, FRAME_HEIGHT))
             else:
                 passing_frames += 1
@@ -449,7 +449,7 @@ try:
                 mobile_frames = 1
                 if not mobile_recording:
                     mobile_recording = True
-                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    fourcc = cv2.VideoWriter_fourcc(*"avc1")
                     mobile_video = cv2.VideoWriter("output_mobiledetection.mp4", fourcc, 30, (FRAME_WIDTH, FRAME_HEIGHT))
             else:
                 mobile_frames += 1

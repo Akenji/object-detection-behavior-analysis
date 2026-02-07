@@ -21,8 +21,8 @@ USE_CAMERA = True
 CAMERA_INDEX = 0
 VIDEO_PATH = "test_videos/Passing_Paper.mp4"
 
-LECTURE_HALL_NAME = "Hall-2"
-BUILDING = "FET Building"
+LECTURE_HALL_NAME = "Hall-1, Floor 1"
+BUILDING = "FET BUILDING"
 
 DB_USER = "root"
 DB_PASS = ""

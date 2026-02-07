@@ -9,6 +9,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from .models import TeacherProfile
+from django.core.files.storage import FileSystemStorage
+import subprocess
+import sys
+import os
 import json
 from django.db.models import Q
 from django.core.mail import send_mail
@@ -355,6 +359,7 @@ def manage_lecture_halls(request):
                     error_message = f"Lecture Hall '{hall_name}' already exists in '{building}'."
                 else:
                     LectureHall.objects.create(hall_name=hall_name, building=building)
+                    messages.success(request, f"Lecture Hall '{hall_name}' in '{building}' has been added successfully.")
                     return redirect('manage_lecture_halls')
 
         elif 'map_teacher' in request.POST:
@@ -366,9 +371,22 @@ def manage_lecture_halls(request):
                 LectureHall.objects.filter(assigned_teacher=teacher).update(assigned_teacher=None)
                 hall.assigned_teacher = teacher
                 hall.save()
+                messages.success(request, f"Teacher '{teacher.get_full_name()}' has been assigned to '{hall.hall_name}'.")
                 return redirect('manage_lecture_halls')
-            except:
-                pass
+            except Exception as e:
+                messages.error(request, f"Error assigning teacher: {str(e)}")
+                
+        elif 'delete_hall' in request.POST:
+            hall_id = request.POST.get('hall_id')
+            try:
+                hall = LectureHall.objects.get(id=hall_id)
+                hall_name = hall.hall_name
+                building = hall.building
+                hall.delete()
+                messages.success(request, f"Lecture Hall '{hall_name}' in '{building}' has been deleted successfully.")
+                return redirect('manage_lecture_halls')
+            except Exception as e:
+                messages.error(request, f"Error deleting lecture hall: {str(e)}")
 
     return render(request, 'manage_lecture_halls.html', {
         'lecture_halls': lecture_halls,
@@ -417,6 +435,44 @@ def run_cameras_page(request):
     return render(request, 'run_cameras.html')
 
 
+@login_required
+@user_passes_test(is_admin)
+def analyze_recorded_video(request):
+    """
+    Page for uploading a video and triggering its analysis.
+    """
+    halls = LectureHall.objects.all()
+    if request.method == 'POST':
+        video_file = request.FILES.get('video_file')
+        hall_id = request.POST.get('hall_id')
+
+        if not video_file or not hall_id:
+            messages.error(request, "Video file and lecture hall are required.")
+            return render(request, 'analyze_video.html', {'halls': halls})
+
+        # Save the uploaded video file
+        fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'uploaded_videos'))
+        os.makedirs(fs.location, exist_ok=True)
+        filename = fs.save(video_file.name, video_file)
+        video_path = fs.path(filename)
+
+        # Trigger the ML script
+        script_path = os.path.join(settings.BASE_DIR, "ML", "process_video.py")
+        
+        # Run the script in the background
+        command = [sys.executable, script_path, "--video", video_path, "--hall_id", str(hall_id)]
+        
+        try:
+            subprocess.Popen(command)
+            messages.success(request, f"Analysis started for {video_file.name}. Results will appear in the malpractice log.")
+        except Exception as e:
+            messages.error(request, f"Failed to start analysis: {str(e)}")
+        
+        return redirect('analyze_recorded_video')
+
+    return render(request, 'analyze_video.html', {'halls': halls})
+
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser) 
@@ -425,8 +481,8 @@ def trigger_camera_scripts(request):
         # List of configurations for each angle
         client_configs = [
             {
-                "name": "Top Corner - Host(Allen 2)",
-                "script_path": "C:\\Users\\noelm\\Documents\\PROJECTS\\DetectSus\\ML\\front.py",
+                "name": "Pre-recorded Video Analysis",
+                "script_path": "C:\\Users\\PC\\Documents\\object-detection-behavior-analysis\\ML\\front.py",
                 "mode": "local"
             },
             # {

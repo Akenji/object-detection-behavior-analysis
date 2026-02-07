@@ -7,9 +7,9 @@ from django.contrib import admin
 # Lecture Hall Model
 class LectureHall(models.Model):
     BUILDING_CHOICES = [
-        ('MAIN', 'Main Building'),
-        ('KE', 'KE Block'),
-        ('PG', 'PG Block'),
+        ('FET', 'FET BUILDING'),
+        ('TECH', 'TECH Block'),
+        ('TECH', 'TECH BUILDING'),
         # Add more if needed
     ]
     building = models.CharField(max_length=50, choices=BUILDING_CHOICES)

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             name='LectureHall',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('building', models.CharField(choices=[('MAIN', 'Main Building'), ('KE', 'KE Block')], max_length=50)),
+                ('building', models.CharField(choices=[('FET ', 'FET Building'), ('TECH', 'TECH Block')], max_length=50)),
                 ('hall_name', models.CharField(max_length=50)),
                 ('assigned_teacher', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],

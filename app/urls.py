@@ -23,6 +23,7 @@ urlpatterns = [
     path('manage-lecture-halls/', views.manage_lecture_halls, name='manage_lecture_halls'),
     path('view_teachers/', views.view_teachers, name='view_teachers'),
     path('run_cameras/', views.run_cameras_page, name='run_cameras_page'),
+    path('analyze-video/', views.analyze_recorded_video, name='analyze_recorded_video'),
     path('trigger_camera_scripts/', views.trigger_camera_scripts, name='trigger_camera_scripts'),
     path('stop_camera_scripts/', views.stop_camera_scripts, name='stop_camera_scripts'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -459,10 +459,12 @@
         </button>
       </div>
       <div class="modal-body text-center">
-        <video id="videoPlayer" width="100%" controls autoplay muted playsinline>
+        <video id="videoPlayer" style="max-width: 100%; max-height: 500px; width: auto; height: auto;" controls playsinline>
+          <source id="videoSource" src="" type="video/mp4">
           Your browser does not support the video tag.
         </video>
         <div id="videoError" class="text-danger mt-2" style="display: none;"></div>
+        <div id="videoDebug" class="text-info mt-2" style="display: none; font-size: 0.85rem;"></div>
       </div>
     </div>
   </div>
@@ -585,39 +587,44 @@
   // VIEW VIDEO
   function playVideo(videoUrl) {
     const videoPlayer = document.getElementById('videoPlayer');
+    const videoSource = document.getElementById('videoSource');
     const errorDisplay = document.getElementById('videoError');
+    const debugDisplay = document.getElementById('videoDebug');
+    
     errorDisplay.style.display = 'none';
+    debugDisplay.style.display = 'none';
 
-    // Correctly construct the mediaPath
-    const mediaPath = `media/${videoUrl}`; // Removed semicolon and corrected template literal
-
-    // Clear any previous <source> elements
-    videoPlayer.pause();
-    while (videoPlayer.firstChild) {
-      videoPlayer.removeChild(videoPlayer.firstChild);
-    }
-
-    // Create new source
-    const source = document.createElement('source');
-    source.src = mediaPath;
-    source.type = 'video/mp4';
-
-    // Handle loading error
-    source.onerror = () => {
-      errorDisplay.textContent = 'Error: Video file not found or invalid format';
+    // Construct the media path
+    const mediaPath = `/media/${videoUrl}`;
+    
+    // Show debug info
+    debugDisplay.textContent = `Loading: ${mediaPath}`;
+    debugDisplay.style.display = 'block';
+    
+    // Set the source
+    videoSource.src = mediaPath;
+    
+    // Reload the video
+    videoPlayer.load();
+    
+    // Handle errors
+    videoPlayer.onerror = function(e) {
+      errorDisplay.textContent = `Error: Video file not found or cannot be played in browser. Try downloading instead.`;
       errorDisplay.style.display = 'block';
+      debugDisplay.style.display = 'none';
+      console.error('Video error:', e);
     };
-
-    videoPlayer.appendChild(source);
-
-    // Attempt to play
-    const playPromise = videoPlayer.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(error => {
-        errorDisplay.textContent = `Playback failed: ${error.message}`; // Corrected template literal
-        errorDisplay.style.display = 'block';
-      });
-    }
+    
+    // Handle successful load
+    videoPlayer.onloadedmetadata = function() {
+      debugDisplay.style.display = 'none';
+      console.log('Video loaded');
+    };
+    
+    // Handle when video can play
+    videoPlayer.oncanplay = function() {
+      debugDisplay.style.display = 'none';
+    };
   }
 
 

@@ -22,8 +22,8 @@ USE_CAMERA = False
 CAMERA_INDEX = 1
 VIDEO_PATH = "test_videos/Top_Corner.mp4"
 
-LECTURE_HALL_NAME = "LH2"
-BUILDING = "KE Block"
+LECTURE_HALL_NAME = "Hall-1, Floor 1"
+BUILDING = "FET BUILDING"
 
 DB_USER = "root"
 DB_PASSWORD = ""

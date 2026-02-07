@@ -23,8 +23,8 @@ USE_CAMERA = True
 CAMERA_INDEX = 1
 VIDEO_PATH = "test_videos/Phone_2.mp4"
 
-LECTURE_HALL_NAME = "Hall-2"
-BUILDING = "FET Building"
+LECTURE_HALL_NAME = "tech-1"
+BUILDING = "TECH BLOCK"
 
 DB_USER = "root"
 DB_PASS = ""

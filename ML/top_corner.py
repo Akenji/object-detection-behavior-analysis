@@ -22,8 +22,8 @@ CAMERA_INDEX = 1
 VIDEO_PATH = "test_videos/Turning_Back.mp4"  # used if USE_CAMERA is False
 # VIDEO_PATH = "test_videos/Phone.mp4"  # used if USE_CAMERA is False
 
-LECTURE_HALL_NAME = "BGFL"
-BUILDING = "FET Building"
+LECTURE_HALL_NAME = "Hall-1, Floor 1"
+BUILDING = "FET BUILDING"
 
 DB_USER = "root"
 DB_PASS = "123"

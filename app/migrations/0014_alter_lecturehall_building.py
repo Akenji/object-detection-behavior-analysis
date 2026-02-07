@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='lecturehall',
             name='building',
-            field=models.CharField(choices=[('MAIN', 'Main Building'), ('KE', 'KE Block'), ('PG', 'PG Block')], max_length=50),
+            field=models.CharField(choices=[('FET', 'FET BUILDING'), ('TECH', 'TECH Block'), ('TECH', 'TECH BUILDING')], max_length=50),
         ),
     ]

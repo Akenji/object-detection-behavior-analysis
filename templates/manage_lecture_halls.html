@@ -88,6 +88,19 @@
   .btn-assign:hover {
     background-color: #218838;
   }
+  .btn-delete {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    margin-left: 5px;
+  }
+  .btn-delete:hover {
+    background-color: #c82333;
+  }
   /* Dropdown/Select Styling */
   .teacher-select {
     border-radius: 5px;
@@ -129,9 +142,9 @@
             <label for="buildingSelect">Building</label>
             <select name="building" class="form-control" id="buildingSelect" required>
               <option value="">Select Building</option>
-              <option value="FET BGFL">FET BGFL</option>
-              <option value="Hall1">Hall1</option>
-              <option value="Hall2">Hall2</option>
+              <option value="FET BUILDING">FET BUILDING</option>
+              <option value="TECH">TECH BLOCK</option>
+              <option value="TECH BUILDING">TECH BUILDING</option>
             </select>
             <div class="invalid-feedback">
               Please select a building.
@@ -214,6 +227,7 @@
             <th>Building</th>
             <th>Assigned Teacher</th>
             <th>Map New Teacher</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -245,6 +259,15 @@
                     </button>
                   </div>
                 </div>
+              </form>
+            </td>
+            <td>
+              <form method="post" onsubmit="return confirm('Are you sure you want to delete {{ hall.hall_name }} in {{ hall.building }}? This action cannot be undone.');" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="hall_id" value="{{ hall.id }}">
+                <button class="btn btn-delete" type="submit" name="delete_hall" title="Delete Lecture Hall">
+                  <i class="fas fa-trash-alt"></i> Delete
+                </button>
               </form>
             </td>
           </tr>
