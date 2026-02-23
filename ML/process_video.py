@@ -16,9 +16,6 @@ DB_USER = "catchthem"
 DB_PASS = "catchthem@321"
 DB_NAME = "exam_monitoring"
 
-FRAME_WIDTH = 1280
-FRAME_HEIGHT = 720
-
 # Model paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
@@ -130,6 +127,8 @@ def analyze_video(video_path, hall_id):
         print(f"[ERROR] Could not open video file {video_path}")
         return
 
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     print(f"[INFO] Processing video at {fps} FPS")
 
@@ -157,7 +156,7 @@ def analyze_video(video_path, hall_id):
             if frame_count % 30 == 0:  # Progress update every 30 frames
                 print(f"[PROGRESS] Processing frame {frame_count}/{total_frames}")
 
-            frame = cv2.resize(frame, (FRAME_WIDTH, FRAME_HEIGHT))
+            ##frame = cv2.resize(frame, (FRAME_WIDTH, FRAME_HEIGHT))
 
             # ===== POSE DETECTION =====
             pose_results = pose_model(frame, conf=0.5, verbose=False)
@@ -200,7 +199,8 @@ def analyze_video(video_path, hall_id):
                     print(f"[ALERT] Leaning detected at frame {frame_count}")
                     lean_recording = True
                     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    lean_video = cv2.VideoWriter("output_leaning.mp4", fourcc, fps, (FRAME_WIDTH, FRAME_HEIGHT))
+                    ##lean_video = cv2.VideoWriter("output_leaning.mp4", fourcc, fps, (FRAME_WIDTH, FRAME_HEIGHT))
+                    lean_video = cv2.VideoWriter("output_leaning.mp4", fourcc, fps, (frame_width, frame_height))
 
                 if lean_recording and lean_video:
                     lean_video.write(frame)
@@ -235,7 +235,7 @@ def analyze_video(video_path, hall_id):
                     print(f"[ALERT] Passing paper detected at frame {frame_count}")
                     passing_recording = True
                     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    passing_video = cv2.VideoWriter("output_passing.mp4", fourcc, fps, (FRAME_WIDTH, FRAME_HEIGHT))
+                    passing_video = cv2.VideoWriter("output_passing.mp4", fourcc, fps, (frame_width, frame_height))
 
                 if passing_recording and passing_video:
                     passing_video.write(frame)
@@ -281,7 +281,7 @@ def analyze_video(video_path, hall_id):
                     print(f"[ALERT] Mobile phone detected at frame {frame_count}")
                     mobile_recording = True
                     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                    mobile_video = cv2.VideoWriter("output_mobile.mp4", fourcc, fps, (FRAME_WIDTH, FRAME_HEIGHT))
+                    mobile_video = cv2.VideoWriter("output_mobile.mp4", fourcc, fps, (frame_width, frame_height))
 
                 if mobile_recording and mobile_video:
                     mobile_video.write(frame)

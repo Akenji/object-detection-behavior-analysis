@@ -1,6 +1,6 @@
 ## Inspired By and Adapted From
 
-This work is heavily inspired by and uses foundational concepts from the following project:
+This work is inspired by and uses foundational concepts from the following project:
 Link:[DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision](https://github.com/noelmathen/DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Computer-Vision)
 
 
@@ -8,16 +8,6 @@ Link:[DetectSus---Real-Time-Malpractice-Detection-System-in-Classrooms-using-Com
 
 CatchThem is a real-time exam malpractice analysis tool, detecting prohibited items like mobile phones and pose estimation (e.g., identifying suspicious behaviors like turning around or passing notes) and behavior analysis (like, Loitering detection, Crowd counting , object detection, Zone intrusion alerts )
 
-<!--
----
-
-# Live Demonstration
-> Click the thumbnail to watch the youtube video (Coming Soon)
-
-[CatchThem Demo]()()
-
----
--->
 
 ## 🧠 Overview
 CatchThem is a real-time surveillance system designed to detect and report instances of malpractice during offline classroom examinations. By combining **object detection** (e.g., detecting prohibited items like mobile phones) and **pose estimation** (e.g., identifying suspicious behaviors like turning around or passing notes), this project aims to provide educational Intergrity.
